@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from markupsafe import escape
 from . import utils
 
@@ -73,9 +73,13 @@ def item_endpoint(key):
 @app.route("/vulnerable_echo")
 def vulnerable_echo():
     name = request.args.get("name", "")
-    # WARNING: raw insertion - this is intentionally vulnerable for the exercise
-    html = f"<h2>Hello {name}</h2>"
-    return html, 200, {"Content-Type": "text/html; charset=utf-8"}
+    safe_name = escape(name)
+    
+    html_content = f"<h2>Hello {safe_name}</h2>"
+    response = Response(html_content, content_type="text/html; charset=utf-8")
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'"
+    
+    return response
 
 # "Safe" echo uses escaping
 @app.route("/safe_echo")

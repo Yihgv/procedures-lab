@@ -59,3 +59,50 @@ def clear_db() -> None:
     """Helper for tests (remove all items)."""
     global _DB
     _DB = {}
+from typing import Dict, Optional
+
+_DB: Dict[str, Dict] = {}
+
+def add(a: float, b: float) -> float:
+    """Return the sum of two float arguments."""
+    return a + b
+
+def fib(n: int) -> int:
+    """Return the n-th Fibonacci number with fib(0) == 0, fib(1) == 1."""
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
+
+def create_item(key: str, value: Dict) -> None:
+    """Store a copy of value under key. Replacing existing value is fine."""
+    _DB[key] = value.copy()
+
+def read_item(key: str) -> Optional[Dict]:
+    """Return a copy of the stored dict or None if absent."""
+    if key in _DB:
+        return _DB[key].copy()
+    return None
+
+def update_item(key: str, patch: Dict) -> bool:
+    """If the key exists, merge patch into the stored dict and return True. If key missing, return False."""
+    if key in _DB:
+        _DB[key].update(patch)
+        return True
+    return False
+
+def delete_item(key: str) -> bool:
+    """Delete the key if present; return True if deleted, False otherwise."""
+    if key in _DB:
+        del _DB[key]
+        return True
+    return False
+
+def clear_db():
+    """Clear the database (for tests)."""
+    _DB.clear()
